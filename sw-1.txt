@@ -1,9 +1,12 @@
+SW-DIST-RH-1
+
 en
 conf t
-hostname SW-DIST-1
+hostname SW-DIST-RH-1
 ip routing
 spanning-tree mode rapid-pvst
-spanning-tree vlan 1-4094 priority 8192
+spanning-tree vlan 10 priority 4096
+spanning-tree vlan 20-50 priority 16384
 
 VLAN 10
  name VLAN-RH
@@ -16,50 +19,21 @@ VLAN 40
 VLAN 50
  name VLAN-DATA-CENTER
 VLAN 200
- name VLAN-GERENCIAMENTO
+ name VLAN-NATIVE
 
 interface Loopback0
  description ID-ROUTER-OSPF
  ip address 2.2.2.2 255.255.255.255
 
 interface vlan 10
- description gateway-rh
+ description GATEWAY-RH
  ip address 10.10.0.2 255.255.0.0
  ip helper-address 10.50.0.254
  standby 10 ip 10.10.0.1
  standby 10 priority 110
  standby 10 preempt
 
-interface vlan 20
- description gateway-mkt
- ip address 10.20.0.2 255.255.0.0
- ip helper-address 10.50.0.254
- standby 20 ip 10.20.0.1
- standby 20 priority 100
- standby 20 preempt
 
-interface vlan 30
- description gateway-hall
- ip address 10.30.0.2 255.255.0.0
- ip helper-address 10.50.0.254
- standby 30 ip 10.30.0.1
- standby 30 priority 100
- standby 30 preempt
-
-interface vlan 40
- description gateway-ti
- ip address 10.40.0.2 255.255.0.0
- ip helper-address 10.50.0.254
- standby 40 ip 10.40.0.1
- standby 40 priority 100
- standby 40 preempt
-
-interface vlan 50
- description gateway-data-center
- ip address 10.50.0.2 255.255.0.0
- standby 50 ip 10.50.0.1
- standby 50 priority 100
- standby 50 preempt
 
 interface vlan 200
  description gateway-gerenciamento
@@ -71,23 +45,25 @@ interface vlan 200
 
 int g 1/0/24
 no shutdown
-switchport mode access vlan 10
+description LINK-TO-ACC1-RH
+switchport mode trunk
+switchport trunk allowed vlan 10,20,30,40,50
+
 
 
 interface range g 1/0/10-11
- description LINK-TO-SW-DIST-2
+ description UPLINK-TO-SW-DIST-2
  no shutdown
  switchport mode trunk
- switchport trunk allowed vlan 10,20,30,40,50,200
- switchport trunk native vlan 200
+ switchport trunk allowed vlan 10,20,30,40,50
  channel-group 1 mode active
 !
 interface port-channel1
  description UPLINK-TO-SW-DIST-2
  no shutdown
  switchport mode trunk
- switchport trunk allowed vlan 10,20,30,40,50,200
- switchport trunk native vlan 200
+ switchport trunk allowed vlan 10,20,30,40,50
+
 
 int g 1/0/1
 description LINK-TO-BORDER
@@ -99,15 +75,34 @@ no shutdown
 int g 1/0/2
 description LINK-TO-SW-DIST-BKP
 switchport mode trunk
-switchport trunk allowed vlan 10,20,30,40,50,200
+switchport trunk allowed vlan 10,20,30,40,50
 no shutdown
 
 router ospf 1
  router-id 2.2.2.2
- passive-interface default
- no passive-interface port-channel1
  network 1.1.1.0 0.0.0.3 area 0
  network 10.10.0.0 0.0.255.255 area 0
+ do wr
+ end
+ 
+line console 0
+password sw-dist-1
+login
+exi
+enable password sw-dist-1
+no ip domain-lookup
+banner motd #ACESSO RESTRITO#
+service password-encryption
 do wr
-end
+
+ip domain-name tecnocorp.sw
+username admin password sw-dist-1
+crypto key generate rsa
+1024
+line vty 0 15
+login local
+transport input ssh
+exit
+ip ssh version 2
+do wr
 
