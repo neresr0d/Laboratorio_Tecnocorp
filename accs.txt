@@ -1,4 +1,4 @@
-SW-ACC-RH
+SW-ACC1-RH
 
 en
 conf t
@@ -8,13 +8,16 @@ name VLAN-RH
 exit
 interface range faste 0/1-24
 switchport mode acess
-switchport acess vlan 20
+switchport acess vlan 10
 exi
+interface faste 0/24
+description LINK-TO-AP
+
 interface g 0/1
-description LINK-T0-SW-DIST-1
+description LINK-T0-SW-DIST-RH-1
 exi
 interface g 0/2
-description LINK-TO-SW-DIST-2
+description LINK-TO-SW-DIST-BKP
 exi
 interface range g 0/1-2
 switchport mode trunk
@@ -36,10 +39,10 @@ switchport mode acess
 switchport acess vlan 20
 exi
 interface g 0/1
-description LINK-T0-SW-DIST-1
+description LINK-T0-SW-DIST-2
 exi
 interface g 0/2
-description LINK-TO-SW-DIST-2
+description LINK-TO-SW-DIST-BKP
 exi
 interface range g 0/1-2
 switchport mode trunk
@@ -54,15 +57,16 @@ conf t
 hostname ACC1-HALL
 VLAN 30
 name VLAN-HALL
+exi
 interface range faste 0/1-24
 switchport mode acess
 switchport acess vlan 30
 exi
 interface g 0/1
-description LINK-T0-SW-DIST-1
+description LINK-T0-SW-DIST-2
 exi
 interface g 0/2
-description LINK-TO-SW-DIST-2
+description LINK-TO-SW-DIST-BKP
 exi
 interface range g 0/1-2
 switchport mode trunk
@@ -82,10 +86,10 @@ switchport mode acess
 switchport acess vlan 40
 exi
 interface g 0/1
-description LINK-T0-SW-DIST-1
+description LINK-T0-SW-DIST-2
 exi
 interface g 0/2
-description LINK-TO-SW-DIST-2
+description LINK-TO-SW-DIST-BKP
 exi
 interface range g 0/1-2
 switchport mode trunk
@@ -106,13 +110,30 @@ switchport mode acess
 switchport acess vlan 50
 exi
 interface g 0/1
-description LINK-T0-SW-DIST-1
+description LINK-T0-SW-DIST-2
 exi
 interface g 0/2
-description LINK-TO-SW-DIST-2
+description LINK-TO-SW-DIST-BKP
 exi
 interface range g 0/1-2
 switchport mode trunk
 switchport trunk allowed vlan 10,20,30,40,50
 do wr
 end
+
+en
+conf t
+line console 0
+password rh-acc1
+login
+exi
+enable password rh-acc1
+no ip domain-lookup
+banner motd #ACESSO RESTRITO#
+service password-encryption
+do wr
+end
+
+switch port-security maximum 1
+switch port-security mac-address sticky
+switch port-security violation shutdown
