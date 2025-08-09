@@ -1,0 +1,27 @@
+serviço de voip
+
+telephony-service
+max-dn 4 - limita a quantidade de ramais
+max-ephones 4 - limita a quantidade de telefones
+ip source-address <ip da sub-interface> port 2000
+
+_________________
+interface vlan p/ voip
+
+int <n porta.> <n vlan>
+encapsulation dot1q 80
+ip address <ip> <mask>
+_______________________________
+config do ramal
+
+ephone-dn 1(o número indica o número do ramal, teremos 4)
+number <um número para o ramal>
+__________
+config do telefone
+
+ephone 1(o número indica qual tel, teremos 1 em cada ramal)
+type 7960
+button 1:1(o segundo número indica qual ramal)
+anotar mac da vlan(está no telefone)
+mac-address <mac do telefone>
+__________________
