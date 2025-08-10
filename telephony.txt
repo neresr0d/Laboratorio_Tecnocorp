@@ -25,3 +25,8 @@ button 1:1(o segundo número indica qual ramal)
 anotar mac da vlan(está no telefone)
 mac-address <mac do telefone>
 __________________
+
+10 - 0001.4246.85E2
+20 - 0040.0B26.996A
+30 - 0050.0FE1.93EB
+40 - 000A.F34D.4D62
